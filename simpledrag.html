@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>simpleDrag</title>
+</head>
+<style>
+	*{margin: 0;padding: 0;}
+	#drag{
+		position: absolute;
+		width: 200px;
+		height: 200px;
+		background: blue;
+	}
+	#dragHeader, #dragTrigger{
+		display: inline-block;
+		width: 200px;
+		height: 48px;
+		line-height: 48px;
+		text-align: center;
+		cursor: move;
+	}
+	#dragHeader {
+		background: red;
+	}
+	#dragTrigger {
+		background: gray;
+	}
+</style>
+<body>
+	<div id="drag">
+		<span id="dragHeader">头部</span>
+		<span id="dragTrigger">另外一个触发区域</span>
+	</div>
+	<script src="./EventUtil.js"></script>
+	<script>
+		window.onload = function (argument) {
+			var oDrag = document.getElementById("dragHeader"),
+				odragTrigger =document.getElementById('dragTrigger'),
+				oMove = document.getElementById('drag'),
+				absX,
+				absY;
+
+			EventUtil.addHandler(oDrag, "mousedown", mouseDown);
+			EventUtil.addHandler(odragTrigger, "mousedown", mouseDown);
+			
+			function mouseDown (event) {
+				var event = EventUtil.getEvent(event),
+					clientX = event.clientX,
+					clientY = event.clientY;
+				absX = clientX - oMove.offsetLeft;
+				absY = clientY - oMove.offsetTop;
+
+				EventUtil.addHandler(document, "mousemove", mouseMove);
+				EventUtil.addHandler(document, "mouseup", mouseUp);
+			}
+
+			function mouseUp (event) {
+				EventUtil.removeHandler(document, "mousemove", mouseMove);
+				EventUtil.removeHandler(document, "mouseup", mouseUp);
+			}
+
+			function mouseMove (event) {
+				var event = EventUtil.getEvent(event),
+				posX = event.clientX - absX,
+				posY = event.clientY - absY,
+				winW = document.documentElement.clientWidth || document.body.clientWidth,
+				winH = document.documentElement.clientHeight || document.body.clientHeight,
+				maxW = winW - oMove.offsetWidth,
+				maxH = winH - oMove.offsetHeight;
+
+				if (posX < 0) {
+					posX = 0;
+				} else if (posX > maxW) {
+					posX = maxW;
+				}
+
+				if (posY < 0) {
+					posY = 0;
+				} else if (posY > maxH) {
+					posY = maxH;
+				}
+
+				oMove.style.left = posX + 'px';
+				oMove.style.top = posY + 'px';
+			}
+
+		}
+	</script>
+</body>
+</html>
